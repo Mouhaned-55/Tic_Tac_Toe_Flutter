@@ -14,8 +14,9 @@ class _HomePageState extends State<HomePage> {
   String activePlayer = 'X';
   bool gameOver = false;
   int turn = 0;
-  String result = '';
+  String result = 'xxxxxxxxxxxx';
   Game game = Game();
+  bool isSwitched = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +24,98 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
           child: Column(
-        children: [],
+        children: [
+          SwitchListTile.adaptive(
+              title: const Text(
+                "Turn on/off two players",
+                style: TextStyle(color: Colors.white, fontSize: 28),
+                textAlign: TextAlign.center,
+              ),
+              value: isSwitched,
+              onChanged: (bool newValue) {
+                setState(() {
+                  isSwitched = newValue;
+                });
+              }),
+          Text(
+            "It's $activePlayer's turn".toUpperCase(),
+            style: const TextStyle(color: Colors.white, fontSize: 52),
+            textAlign: TextAlign.center,
+          ),
+          Expanded(
+              child: GridView.count(
+            padding: EdgeInsets.all(16),
+            mainAxisSpacing: 6.0,
+            crossAxisSpacing: 6.0,
+            childAspectRatio: 1.0,
+            crossAxisCount: 3,
+            children: List.generate(
+                9,
+                (index) => InkWell(
+                      onTap: gameOver ? null : () => _onTap(index),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).shadowColor,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                            child: Text(
+                                Player.playerX.contains(index)
+                                    ? "X"
+                                    : Player.playero.contains(index)
+                                        ? "O"
+                                        : "",
+                                style: TextStyle(
+                                    fontSize: 52,
+                                    color: Player.playerX.contains(index)
+                                        ? Colors.blue
+                                        : Colors.pink))),
+                      ),
+                    )),
+          )),
+          Text(
+            result,
+            style: const TextStyle(color: Colors.white, fontSize: 42),
+            textAlign: TextAlign.center,
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                Player.playerX = [];
+                Player.playero = [];
+                activePlayer = "X";
+                gameOver = false;
+                turn = 0;
+                result = "";
+              });
+            },
+            icon: const Icon(Icons.replay),
+            label: const Text("Repeat the game"),
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all(Theme.of(context).splashColor)),
+          )
+        ],
       )),
     );
+  }
+
+  _onTap(int index) async {
+    if ((Player.playerX.isEmpty || !Player.playerX.contains(index)) &&
+        (Player.playero.isEmpty || !Player.playero.contains(index))) {
+      game.playGame(index, activePlayer);
+      updateState();
+
+      if (!isSwitched && !gameOver) {
+        await game.autoPlay(activePlayer);
+        updateState();
+      }
+    }
+  }
+
+  void updateState() {
+    setState(() {
+      activePlayer = (activePlayer == 'X') ? 'O' : 'X';
+    });
   }
 }

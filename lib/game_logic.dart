@@ -22,16 +22,16 @@ class Game {
   Future<void> autoPlay(activePlayer) async {
     int index = 0;
     List<int> emptyCells = [];
-    
+
     for (var i = 0; i < 9; i++) {
-      if (!(Player.playero.contains(i) && Player.playerX.contains(i))) {
+      if (!(Player.playero.contains(i) || Player.playerX.contains(i))) {
         emptyCells.add(i);
       }
-      Random random = Random();
-      int randomIndex = random.nextInt(emptyCells.length);
-
-      index = emptyCells[randomIndex];
-      playGame(index, activePlayer);
     }
+    Random random = Random();
+    int randomIndex = random.nextInt(emptyCells.length);
+
+    index = emptyCells[randomIndex];
+    playGame(index, activePlayer);
   }
 }

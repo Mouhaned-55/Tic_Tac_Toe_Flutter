@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                             child: Text(
                                 Player.playerX.contains(index)
                                     ? "X"
-                                    : Player.playero.contains(index)
+                                    : Player.playerO.contains(index)
                                         ? "O"
                                         : "",
                                 style: TextStyle(
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               setState(() {
                 Player.playerX = [];
-                Player.playero = [];
+                Player.playerO = [];
                 activePlayer = "X";
                 gameOver = false;
                 turn = 0;
@@ -102,11 +102,11 @@ class _HomePageState extends State<HomePage> {
 
   _onTap(int index) async {
     if ((Player.playerX.isEmpty || !Player.playerX.contains(index)) &&
-        (Player.playero.isEmpty || !Player.playero.contains(index))) {
+        (Player.playerO.isEmpty || !Player.playerO.contains(index))) {
       game.playGame(index, activePlayer);
       updateState();
 
-      if (!isSwitched && !gameOver) {
+      if (!isSwitched && !gameOver && turn != 9) {
         await game.autoPlay(activePlayer);
         updateState();
       }
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       activePlayer = (activePlayer == 'X') ? 'O' : 'X';
       turn++;
-      String winnerPlayer = game.chickenWinner();
+      String winnerPlayer = game.checkWinner();
       if (winnerPlayer != "") {
         gameOver = true;
         result = '$winnerPlayer is the winner';

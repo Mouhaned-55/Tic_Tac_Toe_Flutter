@@ -116,6 +116,14 @@ class _HomePageState extends State<HomePage> {
   void updateState() {
     setState(() {
       activePlayer = (activePlayer == 'X') ? 'O' : 'X';
+      turn++;
+      String winnerPlayer = game.chickenWinner();
+      if (winnerPlayer != "") {
+        gameOver = true;
+        result = '$winnerPlayer is the winner';
+      } else if (!gameOver && turn == 9) {
+        result = "it's a Draw";
+      }
     });
   }
 }
